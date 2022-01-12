@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.12)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -26,19 +26,25 @@ string(APPEND CMAKE_CXX_FLAGS " -pedantic -Werror -Wall -Wextra")
 string(APPEND CMAKE_CXX_FLAGS " -Wno-unused-command-line-argument")
 string(APPEND CMAKE_CXX_FLAGS " -Wshadow -Wnon-virtual-dtor")
 
-# new versions of cmake contain gtest search files
-# commented out to increase the build speed.
-# hunter_add_package(GTest)
+hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
+
+hunter_add_package(nlohmann_json)
+find_package(nlohmann_json CONFIG REQUIRED)
+
 
 add_library(${PROJECT_NAME} STATIC
   # enum your files and delete this comment
-  ${CMAKE_CURRENT_SOURCE_DIR}/sources/example.cpp
-)
+  ${CMAKE_CURRENT_SOURCE_DIR}/sources/source.cpp
+        include/student.hpp)
 
 add_executable(demo
   ${CMAKE_CURRENT_SOURCE_DIR}/demo/main.cpp
-)
+        include/student.hpp)
+
+
+target_link_libraries(${PROJECT_NAME} nlohmann_json::nlohmann_json)
+target_link_libraries(demo nlohmann_json::nlohmann_json)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
@@ -50,8 +56,8 @@ target_link_libraries(demo ${PROJECT_NAME})
 if(BUILD_TESTS)
   add_executable(tests
     # TODO: enum your files and delete this comment
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/example.cpp
-  )
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/test.cpp
+          include/student.hpp)
   target_link_libraries(tests ${PROJECT_NAME} GTest::gtest_main)
   enable_testing()
   add_test(NAME unit_tests COMMAND tests)
@@ -61,6 +67,10 @@ if(BUILD_COVERAGE)
   set(ENABLE_COVERAGE ON CACHE BOOL "Enable coverage build." FORCE)
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/coverage/cmake")
   find_package(codecov)
+
+  hunter_add_package(nlohmann_json)
+  find_package(nlohmann_json CONFIG REQUIRED)
+
   string(APPEND CMAKE_CXX_FLAGS " --coverage")
   add_coverage(${PROJECT_NAME})
   add_coverage(tests)
@@ -73,6 +83,10 @@ if(BUILD_DOCS)
   set(DOXYGEN_GENERATE_HTML NO)
   set(DOXYGEN_GENERATE_MAN YES)
   find_package(Doxygen)
+
+  hunter_add_package(nlohmann_json)
+  find_package(nlohmann_json CONFIG REQUIRED)
+  
   doxygen_add_docs(docs include)
   install(DIRECTORY ${DOXYGEN_OUTPUT_DIRECTORY}/man DESTINATION share)
   # add_dependencies(install docs) need to call target docs before install or package
