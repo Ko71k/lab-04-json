@@ -17,8 +17,8 @@ int main(int argc, char* argv[]) {
   }
   json jf = json::parse(ifs);
 // xt ybnmyf[thfxm
-  std::pair<std::vector<uchenik>,std::string> pair = parse_json(jf);
-  std::vector<uchenik> students = pair.first;
+  std::pair<std::vector<student>,std::string> pair = parse_json(jf);
+  std::vector<student> students = pair.first;
   if (pair.second != "") {
     std::cout << "Incorrect reading json file. " << pair.second;
     return 0;
