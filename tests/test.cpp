@@ -1,10 +1,8 @@
-// Copyright 2021 Your Name <your_email>
+// Copyright 2022 Ko71k <rassmagin.rrr@gmail.com>
 
 #include <stdexcept>
 
 #include <gtest/gtest.h>
-
-#include <example.hpp>
 
 TEST(Example, EmptyTest) {
     EXPECT_THROW(example(), std::runtime_error);
